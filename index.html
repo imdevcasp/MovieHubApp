@@ -4,1434 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MovieHub</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/framework7@9.0.3/framework7-bundle.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f3f4f6;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        #app {
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #000;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .login-container, .pin-entry-container {
-            width: 90%;
-            max-width: 400px;
-            padding: 20px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 2rem;
-            color: #FFD700;
-            margin-bottom: 20px;
-        }
-
-        input[type="text"], input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(128, 128, 128, 0.1);
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .error {
-            color: #ff0000;
-            font-size: 0.875rem;
-            margin-bottom: 10px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: rgba(255, 215, 0, 0.8);
-            border: none;
-            border-radius: 5px;
-            color: #000;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .tab-bar {
-            display: flex;
-            justify-content: space-around;
-            background-color: #FFD700;
-            padding: 0.5rem 0;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 10;
-        }
-
-        .tab-button {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.75rem;
-            cursor: pointer;
-            color: #000;
-            border: none;
-            background: none;
-            transition: color 0.3s;
-        }
-
-        .tab-button.active {
-            color: #fff;
-            border-bottom: 2px solid #fff;
-        }
-
-        .tab-button i {
-            font-size: 1.2rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .tab-button span {
-            font-size: 0.875rem;
-        }
-
-        #content {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 60px;
-            height: calc(100vh - 60px);
-        }
-
-        .tab-content {
-            padding: 10px;
-        }
-
-        .section {
-            margin-bottom: 20px;
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-            padding-left: 10px;
-        }
-
-        .media-grid {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 1rem;
-            padding: 0 10px;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .media-grid::-webkit-scrollbar {
-            height: 6px;
-        }
-
-        .media-grid::-webkit-scrollbar-thumb {
-            background-color: rgba(255, 215, 0, 0.5);
-            border-radius: 3px;
-        }
-
-        .media-card {
-            flex: 0 0 auto;
-            width: 120px;
-            position: relative;
-            transition: transform 0.2s;
-            cursor: pointer;
-            scroll-snap-align: start;
-        }
-
-        .media-card img {
-            width: 100%;
-            border-radius: 0.5rem;
-            aspect-ratio: 2/3;
-            object-fit: cover;
-        }
-
-        .media-card p {
-            font-size: 0.875rem;
-            text-align: center;
-            margin-top: 5px;
-            color: #fff;
-        }
-
-        .play-button-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.5rem;
-            color: rgba(255, 215, 0, 0.8);
-        }
-
-        .info-card {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            z-index: 15;
-            display: none;
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 90%;
-            width: 400px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .info-card.active {
-            display: block;
-        }
-
-        .info-card-banner {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 10px 10px 0 0;
-            margin-bottom: 10px;
-        }
-
-        .info-card-title {
-            font-size: 1.5rem;
-            color: #FFD700;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .info-card-description {
-            font-size: 0.9rem;
-            color: #fff;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        .info-card-cast {
-            font-size: 0.9rem;
-            color: #fff;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        .info-card-rating {
-            font-size: 0.9rem;
-            color: #fff;
-            margin-bottom: 10px;
-            text-align: left;
-        }
-
-        .info-card-play, .info-card-favorite {
-            background-color: #FFD700;
-            color: #000;
-            padding: 10px;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            margin-top: 10px;
-            width: 100%;
-        }
-
-        .season-selector, .episode-selector {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            background: rgba(128, 128, 128, 0.1);
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            font-size: 1rem;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-
-        .player-content {
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            background-color: #000;
-            border-radius: 10px;
-            padding: 10px;
-        }
-
-        #player-iframe {
-            width: 100%;
-            height: 200px;
-            border: none;
-            border-radius: 5px;
-            display: block;
-        }
-
-        #player-iframe.fullscreen {
-            width: 100vw;
-            height: 56.25vw;
-            max-height: 100vh;
-            border-radius: 0;
-        }
-
-        .player-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .player-controls button {
-            flex: 1;
-            padding: 10px;
-            background-color: rgba(255, 215, 0, 0.8);
-            border: none;
-            border-radius: 5px;
-            color: #000;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .player-controls i {
-            font-size: 1rem;
-        }
-
-        #particles-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            pointer-events: none;
-            opacity: 0.5;
-        }
-
-        .loading-message, .empty-message, .error-message {
-            color: #ccc;
-            text-align: center;
-            padding: 10px;
-            font-size: 1rem;
-        }
-
-        .error-message {
-            color: #ff0000;
-        }
-
-        .retry-btn {
-            background-color: rgba(255, 215, 0, 0.8);
-            color: #000;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            font-weight: bold;
-            border: none;
-            margin-left: 5px;
-        }
-
-        .retry-btn:hover {
-            background-color: rgba(255, 215, 0, 1);
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .pagination button {
-            padding: 5px 10px;
-            background-color: rgba(255, 215, 0, 0.8);
-            color: #000;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .dark-mode {
-            background-color: #000;
-            color: #fff;
-        }
-
-        .light-mode {
-            background-color: #f2f2f2;
-            color: #000;
-        }
-
-        .dark-mode input[type="text"],
-        .dark-mode input[type="password"],
-        .light-mode input[type="text"],
-        .light-mode input[type="password"] {
-            background: rgba(128, 128, 128, 0.1);
-            color: #fff;
-        }
-
-        .light-mode input[type="text"],
-        .light-mode input[type="password"] {
-            background: #fff;
-            color: #000;
-        }
-
-        .dark-mode .media-card p,
-        .light-mode .media-card p {
-            color: #fff;
-        }
-
-        .light-mode .media-card p {
-            color: #000;
-        }
-
-        .dark-mode h2,
-        .light-mode h2 {
-            color: #FFD700;
-        }
-
-        .dark-mode .info-card,
-        .light-mode .info-card {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .light-mode .info-card {
-            color: #000;
-        }
-
-        .dark-mode .info-card-title,
-        .light-mode .info-card-title {
-            color: #FFD700;
-        }
-
-        .dark-mode .tab-bar,
-        .light-mode .tab-bar {
-            background-color: #FFD700;
-        }
-
-        .light-mode .tab-button {
-            color: #fff;
-        }
-
-        .light-mode .tab-button.active {
-            color: #fff;
-            border-bottom: 2px solid #fff;
-        }
-
-        .toggle-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 40px;
-            height: 20px;
-        }
-
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: 0.4s;
-            border-radius: 20px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background-color: white;
-            transition: 0.4s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider {
-            background-color: #FFD700;
-        }
-
-        input:checked + .slider:before {
-            transform: translateX(20px);
-        }
-
-        @media (min-width: 768px) {
-            .media-card {
-                width: 150px;
-            }
-
-            #player-iframe {
-                height: 300px;
-            }
-
-            .info-card {
-                max-width: 600px;
-                width: 500px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="main.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body class="dark-mode">
-    <div id="app">
-        <div id="login-view" class="view hidden">
-            <div class="login-container">
-                <h1>Set Up Login</h1>
-                <input type="text" id="username-input" placeholder="Username">
-                <input type="password" id="pin-input" placeholder="4-Digit PIN" maxlength="4">
-                <div id="login-error" class="error hidden">Please enter a valid username and 4-digit PIN</div>
-                <button id="setup-button">Set Up</button>
+<body>
+	<div id="app">
+        <div id="login-view" class="view page">
+            <div class="page-content">
+                <div class="login-container liquid-glass">
+                    <h1 style="margin-left:20px;">MovieHub</h1>
+                                
+                    <div class="list no-hairlines-md">
+                        <ul>
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-input-wrap">
+                                        <input style="border-radius:15px;" type="text" id="username-input" placeholder="Username" class="f7-input">
+                                    </div>
+                                </div>
+                            </li>
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-input-wrap">
+                                        <input style="border-radius:15px;" type="password" id="pin-input" placeholder="4-Digit PIN" maxlength="4" class="f7-input">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="login-error" class="error hidden">Please enter a valid username and 4-digit PIN</div>
+                    <button id="setup-button" class="button button-fill button-round liquid-glass">Set Up</button>
+                                <br>
+                </div>
+            </div>
+        </div>
+	
+        <div id="pin-entry-view" class="view page hidden">
+            <div class="page-content">
+                <div class="pin-entry-container liquid-glass">
+                    <h1>Enter PIN</h1>
+                                
+                    <div class="list no-hairlines-md">
+                        <ul>
+                            <li class="item-content item-input">
+                                <div class="item-inner">
+                                    <div class="item-input-wrap">
+                                        <input style="border-radius:15px;" type="password" id="pin-entry-input" placeholder="4-Digit PIN" maxlength="4" class="f7-input">
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="pin-error" class="error hidden">Incorrect PIN</div>
+                    <button id="unlock-button" class="button button-fill button-round">Unlock</button>
+                </div>
             </div>
         </div>
 
-        <div id="pin-entry-view" class="view hidden">
-            <div class="pin-entry-container">
-                <h1>Enter PIN</h1>
-                <input type="password" id="pin-entry-input" placeholder="4-Digit PIN" maxlength="4">
-                <div id="pin-error" class="error hidden">Incorrect PIN</div>
-                <button id="unlock-button">Unlock</button>
+        <div id="main-view" class="view view-main page">
+
+            <div class="page-content" id="content">
+							
+                <div class="tabs">
+
+                    <div id="home-tab" class="tab tab-active">
+											
+                    <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">MovieHub</div>
+										
+                        <div class="section">
+                            <h2>Featured Movies</h2>
+                            <div class="media-grid" id="featured-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="featured-prev" >Previous</button>
+                                <button  class="liquid-glass" id="featured-next">Next</button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Featured TV</h2>
+                            <div class="media-grid" id="featured-tv-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="featured-tv-prev">Previous</button>
+                                <button class="liquid-glass" id="featured-tv-next">Next</button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Watched</h2>
+                            <div class="media-grid" id="watched-content"></div>
+                        </div>
+                        <div class="section">
+                            <h2>Trending Movies</h2>
+                            <div class="media-grid" id="trending-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="trending-prev">Previous</button>
+                                <button class="liquid-glass" id="trending-next">Next</button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Trending TV</h2>
+                            <div class="media-grid" id="trending-tv-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="trending-tv-prev">Previous</button>
+                                <button class="liquid-glass" id="trending-tv-next">Next</button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Top Rated Movies</h2>
+                            <div class="media-grid" id="top-rated-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="top-rated-prev">Previous</button>
+                                <button class="liquid-glass" id="top-rated-next">Next</button>
+                            </div>
+                        </div>
+                        <div class="section">
+                            <h2>Top Rated TV Shows</h2>
+                            <div class="media-grid" id="top-rated-tv-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="top-rated-tv-prev">Previous</button>
+                                <button class="liquid-glass" id="top-rated-tv-next">Next</button>
+                            </div>
+                        </div>
+                    </div>
+										
+					<div id="search-tab" class="tab">
+                        <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Search</div>
+                        <div class="list no-hairlines-md" style="margin: 12px 16px 20px;">
+                            <ul>
+                                <li class="item-content item-input">
+                                    <div class="item-inner">
+                                        <div class="item-input-wrap">
+                                            <input style="border-radius:15px" type="text" id="search-input" placeholder="Search movies or TV shows..." class="f7-input">
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="section">
+                            <h2>Movies</h2>
+                            <div class="media-grid" id="search-movie-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="search-movie-prev">Previous</button>
+                                <button class="liquid-glass" id="search-movie-next">Next</button>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>TV Shows</h2>
+                            <div class="media-grid" id="search-tv-content"></div>
+                            <div class="pagination">
+                                <button class="liquid-glass" id="search-tv-prev">Previous</button>
+                                <button class="liquid-glass" id="search-tv-next">Next</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="favorites-tab" class="tab">
+											<div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Favorites</div>
+                        <div class="section">
+                            <h2>Movies</h2>
+                            <div class="media-grid" id="favorites-movie-content"></div>
+                        </div>
+                        <div class="section">
+                            <h2>TV Shows</h2>
+                            <div class="media-grid" id="favorites-tv-content"></div>
+                        </div>
+                    </div>
+										
+                    <div id="profile-tab" class="tab">
+                        <div class="profile-content">
+                        <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Settings</div>
+                        <p><span id="profile-username" class="username"></span></p>
+                        <button id="logout-button" class="button button-fill button-round liquid-glass logout-btn">Logout</button>
+                        
+                    </div>
+                </div>
             </div>
         </div>
-
-        <div id="main-view" class="view hidden">
-            <div id="content">
-                <div id="home-tab" class="tab-content">
-                    <div class="section">
-                        <h2>Featured Movies</h2>
-                        <div class="media-grid" id="featured-content"></div>
-                        <div class="pagination">
-                            <button id="featured-prev">Previous</button>
-                            <button id="featured-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>Featured TV Shows</h2>
-                        <div class="media-grid" id="featured-tv-content"></div>
-                        <div class="pagination">
-                            <button id="featured-tv-prev">Previous</button>
-                            <button id="featured-tv-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>Watched</h2>
-                        <div class="media-grid" id="watched-content"></div>
-                    </div>
-                    <div class="section">
-                        <h2>Trending Movies</h2>
-                        <div class="media-grid" id="trending-content"></div>
-                        <div class="pagination">
-                            <button id="trending-prev">Previous</button>
-                            <button id="trending-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>Trending TV Shows</h2>
-                        <div class="media-grid" id="trending-tv-content"></div>
-                        <div class="pagination">
-                            <button id="trending-tv-prev">Previous</button>
-                            <button id="trending-tv-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>Top Rated Movies</h2>
-                        <div class="media-grid" id="top-rated-content"></div>
-                        <div class="pagination">
-                            <button id="top-rated-prev">Previous</button>
-                            <button id="top-rated-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>Top Rated TV Shows</h2>
-                        <div class="media-grid" id="top-rated-tv-content"></div>
-                        <div class="pagination">
-                            <button id="top-rated-tv-prev">Previous</button>
-                            <button id="top-rated-tv-next">Next</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="search-tab" class="tab-content hidden">
-                    <input type="text" id="search-input" placeholder="Search movies or TV shows...">
-                    <div class="section">
-                        <h2>Movies</h2>
-                        <div class="media-grid" id="search-movie-content"></div>
-                        <div class="pagination">
-                            <button id="search-movie-prev">Previous</button>
-                            <button id="search-movie-next">Next</button>
-                        </div>
-                    </div>
-                    <div class="section">
-                        <h2>TV Shows</h2>
-                        <div class="media-grid" id="search-tv-content"></div>
-                        <div class="pagination">
-                            <button id="search-tv-prev">Previous</button>
-                            <button id="search-tv-next">Next</button>
-                        </div>
-                    </div>
-                </div>
-                <div id="favorites-tab" class="tab-content hidden">
-                    <div class="section">
-                        <h2>Favorite Movies</h2>
-                        <div class="media-grid" id="favorites-movie-content"></div>
-                    </div>
-                    <div class="section">
-                        <h2>Favorite TV Shows</h2>
-                        <div class="media-grid" id="favorites-tv-content"></div>
-                    </div>
-                </div>
-                <div id="profile-tab" class="tab-content hidden">
-                    <h2>Profile</h2>
-                    <p>Username: <span id="profile-username"></span></p>
-                    <button id="logout-button">Logout</button>
-                    <div class="toggle-container">
-                        <span>Dark Mode</span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="dark-mode-toggle" checked>
-                            <span class="slider"></span>
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div id="info-card" class="info-card hidden">
+						
+        <div id="info-card" class="info-card liquid-glass hidden">
+            <div class="info-card-scroll">
                 <img class="info-card-banner" src="" alt="Banner">
                 <h3 class="info-card-title"></h3>
                 <p class="info-card-description"></p>
                 <p class="info-card-cast"></p>
                 <p class="info-card-rating"></p>
+
                 <select class="season-selector hidden" id="season-selector">
                     <option value="">Select Season</option>
                 </select>
                 <select class="episode-selector hidden" id="episode-selector">
                     <option value="">Select Episode</option>
                 </select>
-                <button class="info-card-play">
+
+                <select class="season-selector" id="source-selector">
+                    <option value="vidsrc.to">VidSrc.to</option>
+                    <option value="vidsrc.mov">VidSrc.mov</option>
+                    <option value="vidsrc.wtf">VidSrc.wtf</option>
+                    <option value="vidsrc.xyz">VidSrc.xyz</option>
+                    <option value="vidzee.to">Vidzee</option>
+                </select>
+
+                <button class="info-card-play button button-fill button-round liquid-glass">
                     <i class="fas fa-play"></i> Play
                 </button>
-                <button class="info-card-favorite">
+                <button class="info-card-favorite button button-fill button-round liquid-glass">
                     <i class="fas fa-heart"></i> Add to Favorites
                 </button>
             </div>
-
+        </div>
+						
             <div id="player-overlay" class="overlay hidden">
-                <div class="player-content">
+                <div style="height:100%;min-width:100%;" class="player-content liquid-glass">
                     <iframe id="player-iframe" allowfullscreen></iframe>
                     <div class="player-controls">
-                        <button id="close-player">Close</button>
-                        <button id="toggle-fullscreen">
+                        <button id="close-player"
+											style="display:inline-block;width:45%;margin:auto;margin-left:1.5vw;"	class="button button-fill button-round liquid-glass">Close</button>
+                        <button style="display:inline-block;width:45%;margin:auto;" id="toggle-fullscreen" class="button button-fill button-round liquid-glass">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
                 </div>
             </div>
+						
+            <div class="toolbar tabbar tabbar-labels bottom floating-tabbar liquid-glass">
+                <div class="tabbar-inner">
+                    <button style="background:none;border-style:none;" class="tab-link active" data-tab="home-tab">
+                        <i class="fas fa-home"></i><span>Home</span>
+                    </button>
+                    <button style="background:none;border-style:none;" class="tab-link" data-tab="search-tab">
+                        <i class="fas fa-search"></i><span>Search</span>
+                    </button>
+                    <button style="background:none;border-style:none;" class="tab-link" data-tab="favorites-tab">
+                        <i class="fas fa-heart"></i><span>Favorites</span>
+                    </button>
+                    <button style="background:none;border-style:none;" class="tab-link" data-tab="profile-tab">
+                        <i class="fas fa-user"></i><span>Profile</span>
+                    </button>
+                </div>
+            </div>
 
-            <nav class="tab-bar">
-                <button class="tab-button active" data-tab="home-tab">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </button>
-                <button class="tab-button" data-tab="search-tab">
-                    <i class="fas fa-search"></i>
-                    <span>Search</span>
-                </button>
-                <button class="tab-button" data-tab="favorites-tab">
-                    <i class="fas fa-heart"></i>
-                    <span>Favorites</span>
-                </button>
-                <button class="tab-button" data-tab="profile-tab">
-                    <i class="fas fa-user"></i>
-                    <span>Profile</span>
-                </button>
-            </nav>
         </div>
     </div>
-
-    <script>
-        $(document).ready(function() {
-            initApp();
-        });
-
-        function initApp() {
-            // https://developer.themoviedb.org/docs/getting-started
-            const tmdbApiKey = 'YOUR_TMDB_API_KEY';
-            const tmdbBaseUrl = 'https://api.themoviedb.org/3';
-            const tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500';
-            const vidsrcEmbedBaseUrl = 'https://vidsrc.to/embed';
-            const corsProxy = '';
-
-            let currentView = 'login-view';
-            let currentTab = 'home-tab';
-            let currentMedia = null;
-            let currentPlayback = { id: null, type: null, season: null, episode: null };
-            let particles = [];
-
-            const sectionState = {
-                'featured': { page: 1, totalPages: 1, query: '', type: 'movie' },
-                'featured-tv': { page: 1, totalPages: 1, query: '', type: 'tv' },
-                'trending': { page: 1, totalPages: 1, query: '', type: 'movie' },
-                'trending-tv': { page: 1, totalPages: 1, query: '', type: 'tv' },
-                'top-rated': { page: 1, totalPages: 1, query: '', type: 'movie' },
-                'top-rated-tv': { page: 1, totalPages: 1, query: '', type: 'tv' },
-                'search-movie': { page: 1, totalPages: 1, query: '', type: 'movie' },
-                'search-tv': { page: 1, totalPages: 1, query: '', type: 'tv' }
-            };
-
-            function switchView(viewId) {
-                try {
-                    $('.view').addClass('hidden');
-                    $(`#${viewId}`).removeClass('hidden');
-                    currentView = viewId;
-                } catch (e) {
-                    console.error('Error switching view:', e);
-                }
-            }
-
-            function switchTab(tabId) {
-                try {
-                    $('.tab-content').addClass('hidden');
-                    $(`#${tabId}`).removeClass('hidden');
-                    $('.tab-button').removeClass('active');
-                    $(`.tab-button[data-tab="${tabId}"]`).addClass('active');
-                    currentTab = tabId;
-
-                    if (tabId === 'home-tab') loadHomeTab();
-                    else if (tabId === 'search-tab') loadSearchTab();
-                    else if (tabId === 'favorites-tab') loadFavoritesTab();
-                    else if (tabId === 'profile-tab') loadProfileTab();
-                } catch (e) {
-                    console.error('Error switching tab:', e);
-                }
-            }
-
-            function initParticles() {
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.id = 'particles-canvas';
-                    document.body.appendChild(canvas);
-                    const ctx = canvas.getContext('2d');
-                    resizeCanvas();
-
-                    for (let i = 0; i < 50; i++) {
-                        particles.push({
-                            x: Math.random() * canvas.width,
-                            y: Math.random() * canvas.height,
-                            vx: (Math.random() - 0.5) * 2,
-                            vy: (Math.random() - 0.5) * 2,
-                            opacity: Math.random() * 0.5 + 0.3,
-                            scale: Math.random() + 0.5
-                        });
-                    }
-
-                    function animate() {
-                        resizeCanvas();
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        particles.forEach(p => {
-                            p.x += p.vx;
-                            p.y += p.vy;
-                            p.opacity -= 0.01;
-
-                            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
-                            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
-                            if (p.opacity <= 0) {
-                                p.x = Math.random() * canvas.width;
-                                p.y = Math.random() * canvas.height;
-                                p.opacity = Math.random() * 0.5 + 0.3;
-                                p.scale = Math.random() + 0.5;
-                            }
-
-                            ctx.beginPath();
-                            ctx.arc(p.x, p.y, 2.5 * p.scale, 0, Math.PI * 2);
-                            ctx.fillStyle = `rgba(255, 215, 0, ${p.opacity})`;
-                            ctx.fill();
-                        });
-                        requestAnimationFrame(animate);
-                    }
-
-                    function resizeCanvas() {
-                        canvas.width = window.innerWidth;
-                        canvas.height = window.innerHeight;
-                    }
-
-                    window.addEventListener('resize', resizeCanvas);
-                    animate();
-                } catch (e) {
-                    console.error('Error initializing particles:', e);
-                }
-            }
-
-            $('#setup-button').click(function() {
-                try {
-                    const username = $('#username-input').val().trim();
-                    const pin = $('#pin-input').val().trim();
-                    if (username && pin.length === 4) {
-                        localStorage.setItem('username', username);
-                        localStorage.setItem('pin', pin);
-                        localStorage.setItem('isLoggedIn', 'true');
-                        localStorage.setItem('requiresPinEntry', 'false');
-                        switchView('main-view');
-                        loadHomeTab();
-                    } else {
-                        $('#login-error').removeClass('hidden');
-                    }
-                } catch (e) {
-                    console.error('Error in setup button click:', e);
-                }
-            });
-
-            $('#unlock-button').click(function() {
-                try {
-                    const pin = $('#pin-entry-input').val().trim();
-                    if (pin === localStorage.getItem('pin')) {
-                        localStorage.setItem('requiresPinEntry', 'false');
-                        switchView('main-view');
-                        loadHomeTab();
-                    } else {
-                        $('#pin-error').removeClass('hidden');
-                        $('#pin-entry-input').val('');
-                    }
-                } catch (e) {
-                    console.error('Error in unlock button click:', e);
-                }
-            });
-
-            $(window).on('focus', function() {
-                try {
-                    if (localStorage.getItem('isLoggedIn') === 'true') {
-                        localStorage.setItem('requiresPinEntry', 'true');
-                        switchView('pin-entry-view');
-                    }
-                } catch (e) {
-                    console.error('Error on window focus:', e);
-                }
-            });
-
-            $('.tab-button').click(function() {
-                try {
-                    const tabId = $(this).data('tab');
-                    switchTab(tabId);
-                } catch (e) {
-                    console.error('Error in tab click:', e);
-                }
-            });
-
-            async function fetchMedia(section, page, query = '') {
-                if (!tmdbApiKey) {
-                    $(`#${section}-content`).html('<p class="text-center text-red-500">TMDb API key is missing. Get one at https://www.themoviedb.org/settings/api.</p>');
-                    return;
-                }
-                const isTv = section.includes('tv');
-                const endpointMap = {
-                    'featured': isTv ? 'discover/tv' : 'discover/movie',
-                    'featured-tv': 'discover/tv',
-                    'trending': isTv ? 'trending/tv/day' : 'trending/movie/day',
-                    'trending-tv': 'trending/tv/day',
-                    'top-rated': isTv ? 'tv/top_rated' : 'movie/top_rated',
-                    'top-rated-tv': 'tv/top_rated',
-                    'search-movie': 'search/movie',
-                    'search-tv': 'search/tv'
-                };
-                const endpoint = query ? (isTv ? 'search/tv' : 'search/movie') : endpointMap[section];
-                const url = `${corsProxy}${tmdbBaseUrl}/${endpoint}?api_key=${tmdbApiKey}${query ? `&query=${encodeURIComponent(query)}` : ''}&page=${page}`;
-                try {
-                    const response = await $.ajax({
-                        url: url,
-                        method: 'GET',
-                        dataType: 'json',
-                        timeout: 5000
-                    });
-                    if (!response.results) {
-                        throw new Error('Invalid response: missing results');
-                    }
-                    sectionState[section].totalPages = response.total_pages || 1;
-                    const items = await Promise.all(response.results.map(async item => {
-                        
-                        let imdbId = null;
-                        try {
-                            const externalIdsResponse = await $.ajax({
-                                url: `${corsProxy}${tmdbBaseUrl}/${isTv ? 'tv' : 'movie'}/${item.id}/external_ids?api_key=${tmdbApiKey}`,
-                                method: 'GET',
-                                dataType: 'json',
-                                timeout: 3000
-                            });
-                            imdbId = externalIdsResponse.imdb_id || null;
-                        } catch (error) {
-                            console.error(`Failed to fetch IMDb ID for ${isTv ? 'TV show' : 'movie'} ${item.id}:`, error);
-                            imdbId = item.id.toString();
-                        }
-                        
-                        let seasons = [];
-                        if (isTv) {
-                            try {
-                                const seasonsResponse = await $.ajax({
-                                    url: `${corsProxy}${tmdbBaseUrl}/tv/${item.id}?api_key=${tmdbApiKey}`,
-                                    method: 'GET',
-                                    dataType: 'json',
-                                    timeout: 3000
-                                });
-                                seasons = seasonsResponse.seasons ? seasonsResponse.seasons.map(season => ({
-                                    season_number: season.season_number,
-                                    episode_count: season.episode_count
-                                })) : [];
-                            } catch (error) {
-                                console.error(`Failed to fetch seasons for TV show ${item.id}:`, error);
-                            }
-                        }
-                        return {
-                            id: item.id || 0,
-                            title: isTv ? (item.name || 'Unknown Title') : (item.title || 'Unknown Title'),
-                            poster: item.poster_path ? `${tmdbImageBaseUrl}${item.poster_path}` : 'https://casp.dev/imovies/imovies.png',
-                            backdropPath: item.backdrop_path,
-                            rating: item.vote_average || 0,
-                            quality: ['4K', '1080p', '720p'][Math.floor(Math.random() * 3)],
-                            releaseDate: isTv ? item.first_air_date : item.release_date,
-                            runtime: isTv ? 45 : Math.floor(Math.random() * (120 - 80 + 1)) + 80,
-                            genres: ['ACTION', 'ADVENTURE', 'ANIMATION', 'COMEDY', 'CRIME', 'DOCUMENTARY', 'DRAMA', 'FAMILY', 'FANTASY', 'HISTORY', 'HORROR', 'MUSIC', 'MYSTERY', 'ROMANCE', 'SCIENCE FICTION', 'THRILLER', 'WAR', 'WESTERN', 'BIOGRAPHY'].sort(() => Math.random() - 0.5),
-                            year: (isTv ? item.first_air_date : item.release_date) ? parseInt((isTv ? item.first_air_date : item.release_date).substring(0, 4)) : null,
-                            imdbId: imdbId,
-                            overview: item.overview || 'No description available.',
-                            type: isTv ? 'tv' : 'movie',
-                            seasons: isTv ? seasons : []
-                        };
-                    }));
-                    const validItems = items.filter(item => item.id && item.title && item.poster && item.imdbId);
-                    renderMedia(section, validItems, isTv ? 'tv' : 'movie');
-                    updatePagination(section);
-                } catch (error) {
-                    console.error(`Failed to load ${section} media:`, {
-                        status: error.status,
-                        statusText: error.statusText,
-                        responseText: error.responseText,
-                        message: error.message
-                    });
-                    let errorMessage = `Failed to load ${section} media. Please try again.`;
-                    if (error.status === 401) {
-                        errorMessage = 'Invalid TMDb API key. Get a new key at https://www.themoviedb.org/settings/api.';
-                    } else if (error.status === 0) {
-                        errorMessage = 'CORS or network error. Use a CORS browser extension or local server with CORS headers.';
-                    } else if (error.status >= 500) {
-                        errorMessage = 'TMDb server error. Please try again later.';
-                    }
-                    $(`#${section}-content`).html(`
-                        <p class="text-center text-red-500">${errorMessage}</p>
-                        <button class="retry-btn" data-section="${section}">Retry</button>
-                    `);
-                }
-            }
-
-            function renderMedia(section, items, type) {
-                try {
-                    const validItems = items.filter(item => item.id && item.title && item.poster && item.imdbId);
-                    if (validItems.length === 0) {
-                        $(`#${section}-content`).html('<p class="text-center text-white">No results found.</p>');
-                        return;
-                    }
-                    const html = validItems.map(item => {
-                        const mediaData = JSON.stringify({
-                            id: item.id || 0,
-                            title: item.title || 'Unknown Title',
-                            poster: item.poster || 'https://casp.dev/imovies/imovies.png',
-                            backdropPath: item.backdropPath,
-                            rating: item.rating || 0,
-                            quality: item.quality || '720p',
-                            releaseDate: item.releaseDate,
-                            runtime: item.runtime || (type === 'tv' ? 45 : 90),
-                            genres: item.genres || [],
-                            year: item.year,
-                            imdbId: item.imdbId || item.id.toString(),
-                            overview: item.overview || 'No description available.',
-                            type: type,
-                            seasons: item.seasons || []
-                        });
-                        return `
-                            <div class="media-card" data-media='${mediaData}' data-type="${type}">
-                                <img src="${item.poster}" alt="${item.title}">
-                                <p>${item.title}</p>
-                                <i class="fas fa-play-circle play-button-overlay"></i>
-                            </div>
-                        `;
-                    }).join('');
-                    $(`#${section}-content`).html(html);
-
-                    $(`#${section}-content .media-card`).off('click').on('click', function() {
-                        try {
-                            const mediaData = $(this).data('media');
-                            if (!mediaData || typeof mediaData !== 'object') {
-                                console.error('Invalid media data during click: data is not an object', { mediaData });
-                                return;
-                            }
-                            if (!mediaData.id || !mediaData.title || !mediaData.imdbId) {
-                                console.error('Invalid media data during click: missing required fields', { mediaData });
-                                return;
-                            }
-                            currentMedia = mediaData;
-                            showInfoCard();
-                        } catch (e) {
-                            console.error('Error clicking media card:', e);
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error rendering media:', e);
-                }
-            }
-
-            function updatePagination(section) {
-                try {
-                    const state = sectionState[section];
-                    $(`#${section}-prev`).prop('disabled', state.page === 1);
-                    $(`#${section}-next`).prop('disabled', state.page >= state.totalPages);
-                } catch (e) {
-                    console.error('Error updating pagination:', e);
-                }
-            }
-
-            function getAllMedia() {
-                try {
-                    const watchedMedia = JSON.parse(localStorage.getItem('watchedMedia') || '[]');
-                    const favoriteMedia = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
-                    const featuredMovies = $('#featured-content .media-card').length ? $('#featured-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const featuredTv = $('#featured-tv-content .media-card').length ? $('#featured-tv-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const trendingMovies = $('#trending-content .media-card').length ? $('#trending-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const trendingTv = $('#trending-tv-content .media-card').length ? $('#trending-tv-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const topRatedMovies = $('#top-rated-content .media-card').length ? $('#top-rated-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const topRatedTv = $('#top-rated-tv-content .media-card').length ? $('#top-rated-tv-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const searchMovies = $('#search-movie-content .media-card').length ? $('#search-movie-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    const searchTv = $('#search-tv-content .media-card').length ? $('#search-tv-content .media-card').map((_, el) => {
-                        const data = $(el).data('media');
-                        return data && typeof data === 'object' ? data : {};
-                    }).get() : [];
-                    return [
-                        ...watchedMedia,
-                        ...favoriteMedia,
-                        ...featuredMovies,
-                        ...featuredTv,
-                        ...trendingMovies,
-                        ...trendingTv,
-                        ...topRatedMovies,
-                        ...topRatedTv,
-                        ...searchMovies,
-                        ...searchTv
-                    ].filter(m => m.id && m.title && m.poster && m.imdbId);
-                } catch (e) {
-                    console.error('Failed to load all media:', e);
-                    return [];
-                }
-            }
-
-            function showInfoCard() {
-                try {
-                    if (!currentMedia || !currentMedia.id || !currentMedia.title || !currentMedia.imdbId) {
-                        console.error('Invalid media data for info card:', currentMedia);
-                        return;
-                    }
-                    $('#info-card .info-card-banner').attr('src', currentMedia.backdropPath ? `${tmdbImageBaseUrl}${currentMedia.backdropPath}` : currentMedia.poster);
-                    $('#info-card .info-card-title').text(currentMedia.title || 'Unknown Title');
-                    $('#info-card .info-card-description').text(currentMedia.overview || 'No description available.');
-                    $('#info-card .info-card-rating').text(`Rating: ${currentMedia.rating}/10`);
-                    if (currentMedia.type === 'tv') {
-                        $('#season-selector').removeClass('hidden');
-                        $('#episode-selector').removeClass('hidden');
-                        const seasons = currentMedia.seasons || [];
-                        $('#season-selector').html('<option value="">Select Season</option>' + seasons.map(s => `<option value="${s.season_number}">Season ${s.season_number}</option>`).join(''));
-                        $('#episode-selector').html('<option value="">Select Episode</option>');
-                        $('#season-selector').off('change').on('change', function() {
-                            const season = $(this).val();
-                            if (season) {
-                                const selectedSeason = seasons.find(s => s.season_number == season);
-                                if (selectedSeason) {
-                                    const episodes = Array.from({ length: selectedSeason.episode_count }, (_, i) => i + 1);
-                                    $('#episode-selector').html('<option value="">Select Episode</option>' + episodes.map(e => `<option value="${e}">Episode ${e}</option>`).join(''));
-                                }
-                            } else {
-                                $('#episode-selector').html('<option value="">Select Episode</option>');
-                            }
-                        });
-                    } else {
-                        $('#season-selector').addClass('hidden');
-                        $('#episode-selector').addClass('hidden');
-                    }
-                    $('#info-card').removeClass('hidden').addClass('active');
-
-                    $(document).off('click.infoCard').on('click.infoCard', function(e) {
-                        if (!$(e.target).closest('#info-card').length && !$(e.target).closest('.media-card').length) {
-                            $('#info-card').removeClass('active');
-                            $('#season-selector').addClass('hidden');
-                            $('#episode-selector').addClass('hidden');
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error showing info card:', e);
-                }
-            }
-
-            $('#info-card .info-card-play').click(function() {
-                try {
-                    if (!currentMedia || !currentMedia.imdbId) {
-                        console.error('Invalid media data for playback:', currentMedia);
-                        return;
-                    }
-                    let watchedMedia = JSON.parse(localStorage.getItem('watchedMedia') || '[]');
-                    const season = $('#season-selector').val();
-                    const episode = $('#episode-selector').val();
-                    const mediaToSave = { ...currentMedia };
-                    if (currentMedia.type === 'tv' && season && episode) {
-                        mediaToSave.lastSeason = season;
-                        mediaToSave.lastEpisode = episode;
-                    }
-                    const index = watchedMedia.findIndex(m => m.id === currentMedia.id && m.type === currentMedia.type);
-                    if (index !== -1) watchedMedia.splice(index, 1);
-                    watchedMedia.unshift(mediaToSave);
-                    if (watchedMedia.length > 10) watchedMedia = watchedMedia.slice(0, 10);
-                    localStorage.setItem('watchedMedia', JSON.stringify(watchedMedia));
-                    $('#info-card').removeClass('active');
-                    embedPlayer(currentMedia.imdbId, currentMedia.type, season, episode);
-                } catch (e) {
-                    console.error('Error in play button click:', e);
-                }
-            });
-
-            $('#info-card .info-card-favorite').click(function() {
-                try {
-                    if (!currentMedia || !currentMedia.id || !currentMedia.title || !currentMedia.imdbId) {
-                        console.error('Invalid media data for favorites:', currentMedia);
-                        return;
-                    }
-                    let favoriteMedia = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
-                    const index = favoriteMedia.findIndex(m => m.id === currentMedia.id && m.type === currentMedia.type);
-                    if (index === -1) {
-                        favoriteMedia.unshift(currentMedia);
-                        if (favoriteMedia.length > 20) favoriteMedia = favoriteMedia.slice(0, 20);
-                        localStorage.setItem('favoriteMedia', JSON.stringify(favoriteMedia));
-                        loadFavoritesTab();
-                    }
-                } catch (e) {
-                    console.error('Error adding to favorites:', e);
-                }
-            });
-
-            function embedPlayer(id, type, season = null, episode = null) {
-                try {
-                    if (!id) {
-                        console.error('Invalid ID for embedding player:', { id, currentMedia });
-                        return;
-                    }
-                    currentPlayback = { id, type, season, episode };
-                    let url;
-                    let storageKey = `playback_${id}`;
-                    if (type === 'movie') {
-                        const savedTime = localStorage.getItem(storageKey);
-                        url = `${vidsrcEmbedBaseUrl}/movie/${id}${savedTime ? `?t=${Math.floor(savedTime)}` : ''}`;
-                    } else {
-                        storageKey = `playback_${id}_${season}_${episode}`;
-                        const savedTime = localStorage.getItem(storageKey);
-                        url = `${vidsrcEmbedBaseUrl}/tv/${id}${season ? `/${season}` : ''}${episode ? `/${episode}` : ''}${savedTime ? `?t=${Math.floor(savedTime)}` : ''}`;
-                    }
-                    $('#player-iframe').attr('src', url);
-                    $('#player-overlay').removeClass('hidden');
-
-                    $('#player-iframe').off('load error').on('load', function() {
-                        try {
-                            const iframe = this.contentWindow;
-                            const video = iframe.document.querySelector('video');
-                            if (video) {
-                                
-                                setInterval(() => {
-                                    try {
-                                        const currentTime = video.currentTime;
-                                        localStorage.setItem(storageKey, currentTime);
-                                    } catch (e) {
-                                        console.error('Error tracking playback time:', e);
-                                    }
-                                }, 1000);
-                                
-                                if (type === 'tv' && season && episode) {
-                                    $(video).off('ended').on('ended', function() {
-                                        try {
-                                            const seasonData = currentMedia.seasons.find(s => s.season_number == season);
-                                            if (seasonData && parseInt(episode) < seasonData.episode_count) {
-                                                const nextEpisode = parseInt(episode) + 1;
-                                                let watchedMedia = JSON.parse(localStorage.getItem('watchedMedia') || '[]');
-                                                const index = watchedMedia.findIndex(m => m.id === currentMedia.id && m.type === currentMedia.type);
-                                                if (index !== -1) watchedMedia.splice(index, 1);
-                                                const mediaToSave = { ...currentMedia, lastSeason: season, lastEpisode: nextEpisode.toString() };
-                                                watchedMedia.unshift(mediaToSave);
-                                                if (watchedMedia.length > 10) watchedMedia = watchedMedia.slice(0, 10);
-                                                localStorage.setItem('watchedMedia', JSON.stringify(watchedMedia));
-                                                embedPlayer(id, type, season, nextEpisode);
-                                            }
-                                        } catch (e) {
-                                            console.error('Error in autoplay next episode:', e);
-                                        }
-                                    });
-                                }
-                            } else {
-                                console.warn('Video element not found in iframe, autoplay may not work due to cross-origin restrictions.');
-                            }
-                        } catch (e) {
-                            console.error('Error on iframe load:', e);
-                        }
-                    }).on('error', function() {
-                        try {
-                            $('#player-iframe').after('<p class="error-message">Failed to load video. <button class="retry-btn">Retry</button></p>');
-                        } catch (e) {
-                            console.error('Error on iframe error:', e);
-                        }
-                    });
-
-                    $(document).off('click', '.retry-btn').on('click', '.retry-btn', function() {
-                        try {
-                            $('#player-iframe').attr('src', url);
-                            $(this).parent().remove();
-                        } catch (e) {
-                            console.error('Error on retry click:', e);
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error embedding player:', e);
-                }
-            }
-
-            $('#close-player').click(function() {
-                try {
-                    $('#player-iframe').attr('src', '');
-                    $('#player-overlay').addClass('hidden');
-                    currentPlayback = { id: null, type: null, season: null, episode: null };
-                } catch (e) {
-                    console.error('Error in close player click:', e);
-                }
-            });
-
-            $('#toggle-fullscreen').click(function() {
-                try {
-                    if (!$('#player-iframe').hasClass('fullscreen')) {
-                        $('#player-iframe').addClass('fullscreen');
-                        $('#toggle-fullscreen i').removeClass('fa-expand').addClass('fa-compress');
-                    } else {
-                        $('#player-iframe').removeClass('fullscreen');
-                        $('#toggle-fullscreen i').removeClass('fa-compress').addClass('fa-expand');
-                    }
-                } catch (e) {
-                    console.error('Error in toggle fullscreen click:', e);
-                }
-            });
-
-            function loadHomeTab() {
-                try {
-                    fetchMedia('featured', sectionState['featured'].page);
-                    fetchMedia('featured-tv', sectionState['featured-tv'].page);
-                    const watchedMedia = JSON.parse(localStorage.getItem('watchedMedia') || '[]');
-                    if (watchedMedia.length === 0) {
-                        $('#watched-content').html('<p class="empty-message">No watched media yet.</p>');
-                    } else {
-                        renderMedia('watched', watchedMedia.slice(-10).reverse(), null);
-                    }
-                    fetchMedia('trending', sectionState['trending'].page);
-                    fetchMedia('trending-tv', sectionState['trending-tv'].page);
-                    fetchMedia('top-rated', sectionState['top-rated'].page);
-                    fetchMedia('top-rated-tv', sectionState['top-rated-tv'].page);
-                } catch (e) {
-                    console.error('Error loading home tab:', e);
-                }
-            }
-
-            function loadSearchTab() {
-                try {
-                    sectionState['search-movie'].query = $('#search-input').val().trim();
-                    sectionState['search-tv'].query = $('#search-input').val().trim();
-                    fetchMedia('search-movie', sectionState['search-movie'].page, sectionState['search-movie'].query);
-                    fetchMedia('search-tv', sectionState['search-tv'].page, sectionState['search-tv'].query);
-
-                    let searchTimeout;
-                    $('#search-input').off('input').on('input', function() {
-                        try {
-                            clearTimeout(searchTimeout);
-                            sectionState['search-movie'].query = $(this).val().trim();
-                            sectionState['search-tv'].query = $(this).val().trim();
-                            sectionState['search-movie'].page = 1;
-                            sectionState['search-tv'].page = 1;
-                            searchTimeout = setTimeout(() => {
-                                fetchMedia('search-movie', sectionState['search-movie'].page, sectionState['search-movie'].query);
-                                fetchMedia('search-tv', sectionState['search-tv'].page, sectionState['search-tv'].query);
-                            }, 500);
-                        } catch (e) {
-                            console.error('Error in search input:', e);
-                        }
-                    });
-                } catch (e) {
-                    console.error('Error loading search tab:', e);
-                }
-            }
-
-            function loadFavoritesTab() {
-                try {
-                    const favoriteMedia = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
-                    const favoriteMovies = favoriteMedia.filter(m => m.type === 'movie');
-                    const favoriteTv = favoriteMedia.filter(m => m.type === 'tv');
-                    if (favoriteMovies.length === 0) {
-                        $('#favorites-movie-content').html('<p class="empty-message">No favorite movies yet.</p>');
-                    } else {
-                        renderMedia('favorites-movie', favoriteMovies, 'movie');
-                    }
-                    if (favoriteTv.length === 0) {
-                        $('#favorites-tv-content').html('<p class="empty-message">No favorite TV shows yet.</p>');
-                    } else {
-                        renderMedia('favorites-tv', favoriteTv, 'tv');
-                    }
-                } catch (e) {
-                    console.error('Error loading favorites tab:', e);
-                }
-            }
-
-            function loadProfileTab() {
-                try {
-                    const username = localStorage.getItem('username') || 'Not set';
-                    $('#profile-username').text(username);
-                } catch (e) {
-                    console.error('Error loading profile tab:', e);
-                }
-            }
-
-            $(document).on('click', '.retry-btn', function() {
-                try {
-                    const section = $(this).data('section');
-                    if (section) {
-                        fetchMedia(section, sectionState[section].page, sectionState[section].query);
-                    }
-                } catch (e) {
-                    console.error('Error on retry click:', e);
-                }
-            });
-
-            $(document).on('click', '[id$="-prev"]', function() {
-                try {
-                    const section = $(this).attr('id').replace('-prev', '');
-                    if (sectionState[section].page > 1) {
-                        sectionState[section].page--;
-                        fetchMedia(section, sectionState[section].page, sectionState[section].query);
-                    }
-                } catch (e) {
-                    console.error('Error on prev click:', e);
-                }
-            });
-
-            $(document).on('click', '[id$="-next"]', function() {
-                try {
-                    const section = $(this).attr('id').replace('-next', '');
-                    if (sectionState[section].page < sectionState[section].totalPages) {
-                        sectionState[section].page++;
-                        fetchMedia(section, sectionState[section].page, sectionState[section].query);
-                    }
-                } catch (e) {
-                    console.error('Error on next click:', e);
-                }
-            });
-
-            $('#logout-button').click(function() {
-                try {
-                    localStorage.clear();
-                    switchView('login-view');
-                } catch (e) {
-                    console.error('Error on logout click:', e);
-                }
-            });
-
-            $('#dark-mode-toggle').change(function() {
-                try {
-                    if (this.checked) {
-                        $('body').removeClass('light-mode').addClass('dark-mode');
-                    } else {
-                        $('body').removeClass('dark-mode').addClass('light-mode');
-                    }
-                } catch (e) {
-                    console.error('Error toggling dark mode:', e);
-                }
-            });
-
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                if (localStorage.getItem('requiresPinEntry') === 'true') {
-                    switchView('pin-entry-view');
-                } else {
-                    switchView('main-view');
-                    loadHomeTab();
-                }
-            } else {
-                switchView('login-view');
-            }
-            initParticles();
-        }
-    </script>
+		
+    <script src="https://cdn.jsdelivr.net/npm/framework7@9.0.3/framework7-bundle.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

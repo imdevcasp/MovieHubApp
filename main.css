@@ -1,0 +1,347 @@
+:root {
+    --f7-theme-color: #00f5ff;
+    --accent: #00f5ff;
+    --glass-bg: rgba(10, 20, 55, 0.75);
+    --glass-border: rgba(255, 255, 255, 0.20);
+    --text-primary: #ffffff;
+}
+
+body {
+    background: linear-gradient(180deg, #001122 0%, #000011 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    color: var(--text-primary);
+}
+	
+.liquid-glass {
+    background: var(--glass-bg) !important;
+    backdrop-filter: blur(32px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(32px) saturate(160%) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 28px;
+}
+
+.navbar {
+    background: transparent !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: 96px;
+}
+.navbar-inner {
+    height: 100%;
+    padding: 0 20px;
+    display: flex;
+    align-items: flex-end;
+}
+.title-large {
+    font-size: 2.65rem !important;
+    font-weight: 800;
+    letter-spacing: -1.8px;
+    color: #ffffff;
+    padding-bottom: 12px;
+    line-height: 1;
+}
+
+.floating-tabbar {
+    position: fixed;
+    bottom: 20px;
+    left: 5vw;
+    right: 16px;
+    height: 66px;
+    z-index: 200;
+    padding: 0 8px;
+    box-shadow: 0 10px 35px rgba(0, 0, 0, 0.35);
+	width:90vw;
+}
+.floating-tabbar .tabbar-inner {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: space-around;
+}
+.floating-tabbar .tab-link {
+    color: #a0b8ff;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.82rem;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.floating-tabbar .tab-link i {
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+		
+}
+.floating-tabbar .tab-link.active {
+    color: #00f5ff;
+}
+
+.page-content {
+    padding-top: 96px !important;
+    padding-bottom: 110px !important;
+}
+
+.f7-input, .season-selector, .episode-selector, .search-input {
+    background: rgba(255,255,255,0.08) !important;
+    border-radius: 18px;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 15px 18px;
+    font-size: 1.05rem;
+    margin: 12px 16px;
+}
+
+.button.button-fill.button-round {
+    width:80%;
+	margin:auto;
+    color: #fff;
+    font-weight: 700;
+    border-radius: 20px;
+    height: 52px;
+    font-size: 1.05rem;
+	margin-top:5px;
+}
+
+.media-grid {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 12px 16px;
+    scroll-snap-type: x mandatory;
+}
+
+.media-card {
+    flex: 0 0 auto;
+    width: 136px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 0.3s ease;
+}
+
+.media-card:active {
+    transform: scale(1.06);
+}
+
+.media-card img {
+    width: 100%;
+    aspect-ratio: 2/3;
+    object-fit: cover;
+}
+
+.media-card p {
+    font-size: 0.92rem;
+    text-align: center;
+    margin: 10px 6px 8px;
+    color: #e0e8ff;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;           
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.25;
+    max-height: 2.5em;               
+    word-break: break-word;
+}
+
+.section h2 {
+    color: #fff;
+    font-size: 17px;
+    font-weight: 700;
+    padding: 20px 16px 8px;
+    letter-spacing: -0.4px;
+	opacity:0.7;
+}
+
+.info-card {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    padding: 0;
+    border-radius: 0;
+    border: none;
+    display: none;
+    background: rgba(0, 0, 0, 0.85);
+    overflow: hidden;
+}
+
+.info-card.active {
+    display: block;
+}
+
+.info-card-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px;
+    padding-bottom: 140px;
+}
+
+.info-card-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.info-card-banner { 
+    width: 100%; 
+    height: 190px; 
+    object-fit: cover; 
+    border-radius: 20px; 
+    margin-bottom: 18px; 
+}
+
+.info-card-title { 
+    font-size: 25px; 
+    color: #fff; 
+    text-align: center; 
+    margin-bottom: 14px; 
+    font-weight: 800; 
+}
+
+.info-card-description,
+.info-card-cast,
+.info-card-rating { 
+    color: #d0e0ff; 
+    font-size: 0.98rem; 
+    line-height: 1.45; 
+    margin: 0 15px 14px; 
+}
+
+.info-card-play,
+.info-card-favorite {
+    width: 88% !important;
+    margin: 12px auto !important;
+    display: block !important;
+}
+
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.96);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.player-content {
+    width: 94%;
+    max-width: 540px;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+#player-iframe {
+    width: 100%;
+    height: 300px;
+    border: none;
+}
+
+#player-iframe.fullscreen {
+    width: 100vw;
+    height: 56.25vw;
+    max-height: 100vh;
+}
+
+#particles-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    opacity: 0.25;
+    z-index: -1;
+}
+
+.profile-content {
+    padding: 24px;
+}
+
+.username {
+    color: #00f5ff;
+    font-weight: 600;
+}
+
+.logout-btn {
+    margin-top: 20px;
+}
+
+.error {
+    color: #ff4d6d;
+    font-size: 0.9rem;
+    margin: 8px 0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.pagination button {
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 15px;
+    font-weight: 500;
+	width:39vw;
+	display:inline-block;
+	margin: 0px 5vw;
+		
+}
+
+.toggle-switch {
+    position: relative;
+    width: 52px;
+    height: 30px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #334466;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background: #00f5ff;
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px); 
+}
+
