@@ -11,87 +11,14 @@
 </head>
 <body>
 	<div id="app">
-        <div id="login-view" class="view page">
-            <div class="page-content">
-                <div class="login-container liquid-glass">
-                    <h1 style="margin-left:20px;">MovieHub</h1>
-                                
-                    <div class="list no-hairlines-md">
-                        <ul>
-                            <li class="item-content item-input">
-                                <div class="item-inner">
-                                    <div class="item-input-wrap">
-                                        <input style="border-radius:15px;" type="text" id="username-input" placeholder="Username" class="f7-input">
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="item-content item-input">
-                                <div class="item-inner">
-                                    <div class="item-input-wrap">
-                                        <input style="border-radius:15px;" type="password" id="pin-input" placeholder="4-Digit PIN" maxlength="4" class="f7-input">
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div id="login-error" class="error hidden">Please enter a valid username and 4-digit PIN</div>
-                    <button id="setup-button" class="button button-fill button-round liquid-glass">Set Up</button>
-                                <br>
-                </div>
-            </div>
-        </div>
-	
-        <div id="pin-entry-view" class="view page hidden">
-            <div class="page-content">
-                <div class="pin-entry-container liquid-glass">
-                    <h1>Enter PIN</h1>
-                                
-                    <div class="list no-hairlines-md">
-                        <ul>
-                            <li class="item-content item-input">
-                                <div class="item-inner">
-                                    <div class="item-input-wrap">
-                                        <input style="border-radius:15px;" type="password" id="pin-entry-input" placeholder="4-Digit PIN" maxlength="4" class="f7-input">
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div id="pin-error" class="error hidden">Incorrect PIN</div>
-                    <button id="unlock-button" class="button button-fill button-round">Unlock</button>
-                </div>
-            </div>
-        </div>
-
         <div id="main-view" class="view view-main page">
-
             <div class="page-content" id="content">
-							
                 <div class="tabs">
-
                     <div id="home-tab" class="tab tab-active">
 											
                     <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">MovieHub</div>
-										
-                        <div class="section">
-                            <h2>Featured Movies</h2>
-                            <div class="media-grid" id="featured-content"></div>
-                            <div class="pagination">
-                                <button class="liquid-glass" id="featured-prev" >Previous</button>
-                                <button  class="liquid-glass" id="featured-next">Next</button>
-                            </div>
-                        </div>
-                        <div class="section">
-                            <h2>Featured TV</h2>
-                            <div class="media-grid" id="featured-tv-content"></div>
-                            <div class="pagination">
-                                <button class="liquid-glass" id="featured-tv-prev">Previous</button>
-                                <button class="liquid-glass" id="featured-tv-next">Next</button>
-                            </div>
-                        </div>
-                        <div class="section">
+                    
+                    <div class="section">
                             <h2>Watched</h2>
                             <div class="media-grid" id="watched-content"></div>
                         </div>
@@ -99,38 +26,56 @@
                             <h2>Trending Movies</h2>
                             <div class="media-grid" id="trending-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="trending-prev">Previous</button>
-                                <button class="liquid-glass" id="trending-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="trending-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="trending-next">Next</button>
+                            </div>
+                        </div>
+										
+                        <div class="section">
+                            <h2>Featured Movies</h2>
+                            <div class="media-grid" id="featured-content"></div>
+                            <div class="pagination">
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="featured-prev" >Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="featured-next">Next</button>
                             </div>
                         </div>
                         <div class="section">
-                            <h2>Trending TV</h2>
+                            <h2>Featured Shows</h2>
+                            <div class="media-grid" id="featured-tv-content"></div>
+                            <div class="pagination">
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="featured-tv-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="featured-tv-next">Next</button>
+                            </div>
+                        </div>
+                        
+                        <div class="section">
+                            <h2>Trending Shows</h2>
                             <div class="media-grid" id="trending-tv-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="trending-tv-prev">Previous</button>
-                                <button class="liquid-glass" id="trending-tv-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="trending-tv-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="trending-tv-next">Next</button>
                             </div>
                         </div>
                         <div class="section">
-                            <h2>Top Rated Movies</h2>
+                            <h2>Top Movies</h2>
                             <div class="media-grid" id="top-rated-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="top-rated-prev">Previous</button>
-                                <button class="liquid-glass" id="top-rated-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="top-rated-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="top-rated-next">Next</button>
                             </div>
                         </div>
                         <div class="section">
-                            <h2>Top Rated TV Shows</h2>
+                            <h2>Top Shows</h2>
                             <div class="media-grid" id="top-rated-tv-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="top-rated-tv-prev">Previous</button>
-                                <button class="liquid-glass" id="top-rated-tv-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="top-rated-tv-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="top-rated-tv-next">Next</button>
                             </div>
                         </div>
                     </div>
 										
-					<div id="search-tab" class="tab">
-                        <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Search</div>
+				    <div id="search-tab" class="tab">
+                    <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Search</div>
                         <div class="list no-hairlines-md" style="margin: 12px 16px 20px;">
                             <ul>
                                 <li class="item-content item-input">
@@ -147,8 +92,8 @@
                             <h2>Movies</h2>
                             <div class="media-grid" id="search-movie-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="search-movie-prev">Previous</button>
-                                <button class="liquid-glass" id="search-movie-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="search-movie-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="search-movie-next">Next</button>
                             </div>
                         </div>
 
@@ -156,13 +101,13 @@
                             <h2>TV Shows</h2>
                             <div class="media-grid" id="search-tv-content"></div>
                             <div class="pagination">
-                                <button class="liquid-glass" id="search-tv-prev">Previous</button>
-                                <button class="liquid-glass" id="search-tv-next">Next</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="search-tv-prev">Previous</button>
+                                <button style="background-color:#1F1B24 !important;border-radius:50px;font-size:15px;" class="liquid-glass" id="search-tv-next">Next</button>
                             </div>
                         </div>
                     </div>
                     <div id="favorites-tab" class="tab">
-											<div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Favorites</div>
+						<div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Favorites</div>
                         <div class="section">
                             <h2>Movies</h2>
                             <div class="media-grid" id="favorites-movie-content"></div>
@@ -175,62 +120,76 @@
 										
                     <div id="profile-tab" class="tab">
                         <div class="profile-content">
-                        <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Settings</div>
-                        <p><span id="profile-username" class="username"></span></p>
-                        <button id="logout-button" class="button button-fill button-round liquid-glass logout-btn">Logout</button>
-                        
+                            <div style="color:#fff;font-size:30px;margin-left:20px;font-weight:900;" class="title large-title">Settings</div>
+                            <p style="margin-left:20px;"><span id="profile-username" class="username"></span></p>
+                            <button style="max-width:180px;display:inline-block !important;background-color:#E01160 !important;margin:10px !important;" id="logout-button" class="button button-fill button-round liquid-glass logout-btn">Reset To Default</button>
+                            
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 						
-        <div id="info-card" class="info-card liquid-glass hidden">
-            <div class="info-card-scroll">
-                <img class="info-card-banner" src="" alt="Banner">
-                <h3 class="info-card-title"></h3>
-                <p class="info-card-description"></p>
-                <p class="info-card-cast"></p>
-                <p class="info-card-rating"></p>
+            <div id="info-card" class="info-card liquid-glass hidden">
+                <div class="info-card-scroll">
+                    <img class="info-card-banner" src="" alt="Banner">
+                    <h3 style="color:#fff;text-align:justify;" class="info-card-title"></h3>
+                    <p class="info-card-description"></p>
+                    <p class="info-card-cast"></p>
+                    <p class="info-card-rating"></p>
 
-                <select class="season-selector hidden" id="season-selector">
-                    <option value="">Select Season</option>
-                </select>
-                <select class="episode-selector hidden" id="episode-selector">
-                    <option value="">Select Episode</option>
-                </select>
+                    <select class="season-selector hidden" id="season-selector">
+                        <option value="">Select Season</option>
+                    </select>
+                    <select class="episode-selector hidden" id="episode-selector">
+                        <option value="">Select Episode</option>
+                    </select>
 
-                <select class="season-selector" id="source-selector">
-                    <option value="vidsrc.to">VidSrc.to</option>
-                    <option value="vidsrc.mov">VidSrc.mov</option>
-                    <option value="vidsrc.wtf">VidSrc.wtf</option>
-                    <option value="vidsrc.xyz">VidSrc.xyz</option>
-                    <option value="vidzee.to">Vidzee</option>
-                </select>
+                    <select class="season-selector" id="source-selector">
+                        <option value="player.autoembed.cc">AutoEmbed (Best)</option>
+                        <option value="vidlink.pro">VidLink</option>
+                        <option value="vidbinge.to">VidBinge</option>
+                        <option value="vidsrc.cc">VidSrc v2</option>
+                    </select>
 
-                <button class="info-card-play button button-fill button-round liquid-glass">
-                    <i class="fas fa-play"></i> Play
-                </button>
-                <button class="info-card-favorite button button-fill button-round liquid-glass">
-                    <i class="fas fa-heart"></i> Add to Favorites
-                </button>
+                    <button style="max-width:100px;display:inline-block !important;background-color:#E01160 !important;margin-right:10px !important;" class="info-card-play button button-fill button-round liquid-glass">
+                        <i class="fas fa-play"></i> Play
+                    </button>
+                    <button style="max-width:140px;display:inline-block !important;background-color:#11E091 !important;" class="info-card-favorite button button-fill button-round liquid-glass">
+                        <i class="fas fa-heart"></i> Favorites
+                    </button>
+                </div>
             </div>
-        </div>
 						
             <div id="player-overlay" class="overlay hidden">
-                <div style="height:100%;min-width:100%;" class="player-content liquid-glass">
+                <div class="player-content liquid-glass">
                     <iframe id="player-iframe" allowfullscreen></iframe>
+                    <div class="player-info">
+                        <h3 style="color:#fff;text-align:justify;" class="info-card-title"></h3>
+                        <p class="info-card-description"></p>
+                        <p class="info-card-cast"></p>
+                        <p class="info-card-rating"></p>
+
+                        <button style="max-width:140px;display:inline-block !important;background-color:#11E091 !important;" class="info-card-favorite button button-fill button-round liquid-glass">
+                            <i class="fas fa-heart"></i> Favorites
+                        </button>
+                        <button style="max-width:140px;background-color:#11E091 !important;" id="next-episode-btn" class="button button-fill button-round liquid-glass" style="display:none; margin-top:8px;">
+                            <i class="fas fa-forward"></i> Next
+                        </button>
+                    </div>
                     <div class="player-controls">
                         <button id="close-player"
-											style="display:inline-block;width:45%;margin:auto;margin-left:1.5vw;"	class="button button-fill button-round liquid-glass">Close</button>
-                        <button style="display:inline-block;width:45%;margin:auto;" id="toggle-fullscreen" class="button button-fill button-round liquid-glass">
+                            style="max-width:100px;display:inline-block !important;background-color:#E01160 !important;margin:10px !important;"
+                            class="button button-fill button-round liquid-glass">Close</button>
+                        <button style="width:80px;padding:8px 8px;display:inline-block;margin:10px;" 
+                            id="toggle-fullscreen" class="button button-fill button-round liquid-glass">
                             <i class="fas fa-expand"></i>
                         </button>
                     </div>
                 </div>
             </div>
 						
-            <div class="toolbar tabbar tabbar-labels bottom floating-tabbar liquid-glass">
-                <div class="tabbar-inner">
+            <div style="border-radius:20px;" class="toolbar tabbar tabbar-labels bottom floating-tabbar liquid-glass">
+                <div  class="tabbar-inner">
                     <button style="background:none;border-style:none;" class="tab-link active" data-tab="home-tab">
                         <i class="fas fa-home"></i><span>Home</span>
                     </button>

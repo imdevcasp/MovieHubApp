@@ -106,34 +106,7 @@ $(document).ready(function () {
             requestAnimationFrame(animate);
         }
         animate();
-			}
-			
-    $('#setup-button').click(function() {
-        const username = $('#username-input').val().trim();
-        const pin = $('#pin-input').val().trim();
-        if (username && pin.length === 4) {
-            localStorage.setItem('username', username);
-            localStorage.setItem('pin', pin);
-            localStorage.setItem('isLoggedIn', 'true');
-            localStorage.setItem('requiresPinEntry', 'false');
-            switchView('main-view');
-            loadHomeTab();
-        } else {
-            $('#login-error').removeClass('hidden');
-        }
-    });
-
-    $('#unlock-button').click(function() {
-        const pin = $('#pin-entry-input').val().trim();
-        if (pin === localStorage.getItem('pin')) {
-            localStorage.setItem('requiresPinEntry', 'false');
-            switchView('main-view');
-            loadHomeTab();
-        } else {
-            $('#pin-error').removeClass('hidden');
-            $('#pin-entry-input').val('');
-        }
-    });
+    }
 
     async function fetchMedia(section, page, query = '') {
         showLoading(true);
@@ -206,7 +179,7 @@ $(document).ready(function () {
                 <div class="media-card" data-media='${mediaData}' data-type="${type}">
                     <img src="${item.poster}" alt="${item.title}" loading="lazy">
                     <p>${item.title}</p>
-										<a style="width:80px;margin:auto;" class="button button-fill liquid-glass">
+                    <a style="background-color:#1F1B24 !important;border-radius:50px;margin:auto;" class="button button-fill liquid-glass">
                     <i class="fas fa-play-circle play-button-overlay"></i></a>
                 </div>
             `;
@@ -266,7 +239,7 @@ $(document).ready(function () {
         let watchedMedia = JSON.parse(localStorage.getItem('watchedMedia') || '[]');
         const season = $('#season-selector').val();
         const episode = $('#episode-selector').val();
-        const selectedSource = $('#source-selector').val() || 'vidsrc.to';
+        const selectedSource = $('#source-selector').val() || 'player.autoembed.cc';
 
         const mediaToSave = { ...currentMedia };
         if (currentMedia.type === 'tv' && season && episode) {
@@ -295,19 +268,87 @@ $(document).ready(function () {
         }
     });
 
-    function embedPlayer(mediaId, type, season = null, episode = null, source = 'vidsrc.to', tmdbId = null) {
+    function updateNextEpisodeButton() {
+        const btn = $('#next-episode-btn');
+        btn.hide().off('click');
+
+        if (currentMedia && currentMedia.type === 'tv' && currentPlayback.season && currentPlayback.episode) {
+            const currentSeason = currentMedia.seasons.find(s => s.season_number == currentPlayback.season);
+            
+            if (currentSeason && parseInt(currentPlayback.episode) < currentSeason.episode_count) {
+                const nextEpisode = parseInt(currentPlayback.episode) + 1;
+                
+                btn.show().on('click', function() {
+                    currentPlayback.episode = nextEpisode;
+                    const source = $('#source-selector').val() || 'player.autoembed.cc';
+                    let cleanId = (currentMedia.id || currentMedia.imdbId).toString();
+                    if (cleanId.startsWith('tt')) cleanId = cleanId.replace('tt', '');
+
+                    let nextUrl;
+                    switch (source) {
+                        case 'player.autoembed.cc':
+                            nextUrl = `https://player.autoembed.cc/embed/tv/${cleanId}/${currentPlayback.season}/${nextEpisode}`;
+                            break;
+                        case 'vidlink.pro':
+                            nextUrl = `https://vidlink.pro/tv/${cleanId}/${currentPlayback.season}/${nextEpisode}`;
+                            break;
+                        case 'vidbinge.to':
+                            nextUrl = `https://vidbinge.to/tv/${cleanId}/${currentPlayback.season}/${nextEpisode}`;
+                            break;
+                        case 'vidsrc.cc':
+                            nextUrl = `https://vidsrc.cc/v2/embed/tv/${cleanId}/${currentPlayback.season}/${nextEpisode}`;
+                            break;
+                        default:
+                            nextUrl = `https://player.autoembed.cc/embed/tv/${cleanId}/${currentPlayback.season}/${nextEpisode}`;
+                    }
+
+                    $('#player-iframe').attr('src', nextUrl);
+                    showPlayerInfo();
+                });
+            }
+        }
+    }
+
+    function embedPlayer(mediaId, type, season = null, episode = null, source = 'player.autoembed.cc', tmdbId = null) {
         let cleanId = mediaId.toString();
         if (!cleanId.startsWith('tt') && tmdbId) cleanId = tmdbId.toString();
         else if (!cleanId.startsWith('tt')) cleanId = 'tt' + cleanId;
 
-        const baseUrl = `https://${source}/embed`;
-        let url = type === 'movie' ? `${baseUrl}/movie/${cleanId}` : `${baseUrl}/tv/${cleanId}/${season || 1}/${episode || 1}`;
+        let url;
+
+        switch (source) {
+            case 'player.autoembed.cc':
+                url = type === 'movie' 
+                    ? `https://player.autoembed.cc/embed/movie/${cleanId}` 
+                    : `https://player.autoembed.cc/embed/tv/${cleanId}/${season || 1}/${episode || 1}`;
+                break;
+            case 'vidlink.pro':
+                url = type === 'movie' 
+                    ? `https://vidlink.pro/movie/${cleanId}` 
+                    : `https://vidlink.pro/tv/${cleanId}/${season || 1}/${episode || 1}`;
+                break;
+            case 'vidbinge.to':
+                url = type === 'movie' 
+                    ? `https://vidbinge.to/movie/${cleanId}` 
+                    : `https://vidbinge.to/tv/${cleanId}/${season || 1}/${episode || 1}`;
+                break;
+            case 'vidsrc.cc':
+                url = type === 'movie' 
+                    ? `https://vidsrc.cc/v2/embed/movie/${cleanId}` 
+                    : `https://vidsrc.cc/v2/embed/tv/${cleanId}/${season || 1}/${episode || 1}`;
+                break;
+            default:
+                url = `https://player.autoembed.cc/embed/movie/${cleanId}`;
+        }
 
         currentPlayback = { id: mediaId, type, season, episode };
 
         const iframe = $('#player-iframe');
         iframe.attr('src', url);
         $('#player-overlay').removeClass('hidden');
+
+        showPlayerInfo();
+        updateNextEpisodeButton();
 
         iframe.off('load').on('load', function() {
             try {
@@ -411,16 +452,27 @@ $(document).ready(function () {
 
     $('#dark-mode-toggle').change(function() {
     });
-		
-    if (localStorage.getItem('isLoggedIn') === 'true') {
-        if (localStorage.getItem('requiresPinEntry') === 'true') {
-            switchView('pin-entry-view');
-        } else {
-            switchView('main-view');
-            loadHomeTab();
-        }
-    } else {
-        switchView('login-view');
+
+    switchView('main-view');
+    loadHomeTab();
+
+    function showPlayerInfo() {
+        if (!currentMedia) return;
+
+        $('.player-info .info-card-title').text(currentMedia.title || 'Unknown Title');
+        $('.player-info .info-card-description').text(currentMedia.overview || 'No description available.');
+        $('.player-info .info-card-cast').text('Cast information not available in this view.');
+        $('.player-info .info-card-rating').text(`Rating: ${currentMedia.rating}/10`);
+
+        $('.player-info .info-card-favorite').off('click').on('click', function() {
+            let favs = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
+            if (!favs.find(m => m.id === currentMedia.id && m.type === currentMedia.type)) {
+                favs.unshift(currentMedia);
+                if (favs.length > 20) favs = favs.slice(0, 20);
+                localStorage.setItem('favoriteMedia', JSON.stringify(favs));
+                loadFavoritesTab();
+            }
+        });
     }
 
     initParticles();
