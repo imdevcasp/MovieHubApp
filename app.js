@@ -7,12 +7,12 @@ $(document).ready(function () {
         darkMode: true
     });
 
-    const tmdbApiKey = 'YOUR_API_KEY';
+    const tmdbApiKey = 'YOUR_TMDB_API_KEY';
     const tmdbBaseUrl = 'https://api.themoviedb.org/3';
     const tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500';
 
     let currentMedia = null;
-    let currentPlayback = { id: null, type: null, season: null, episode: null };
+    let currentPlayback = { id: null, type: null, season: null, episode: null, currentEpisodeIndex: null };
     let particles = [];
 
     const sectionState = {
@@ -146,7 +146,7 @@ $(document).ready(function () {
                 return {
                     id: item.id,
                     title: isTvItem ? (item.name || 'Unknown') : (item.title || 'Unknown'),
-                    poster: item.poster_path ? `${tmdbImageBaseUrl}${item.poster_path}` : 'https://casp.dev/imovies/imovies.png',
+                    poster: item.poster_path ? `${tmdbImageBaseUrl}${item.poster_path}` : null,
                     backdropPath: item.backdrop_path,
                     rating: item.vote_average || 0,
                     overview: item.overview || 'No description available.',
@@ -157,7 +157,16 @@ $(document).ready(function () {
                 };
             }));
 
-            const validItems = items.filter(item => item.id && item.title && item.poster && item.imdbId);
+            const validItems = items.filter(item => 
+                item.id && 
+                item.title && 
+                item.title !== 'Unknown' &&
+                item.poster && 
+                item.poster !== 'https://casp.dev/imovies/imovies.png' &&
+                item.rating > 0 &&
+                item.overview.length > 20
+            );
+
             renderMedia(section, validItems, isTv ? 'tv' : 'movie');
             updatePagination(section);
         } catch (error) {
@@ -203,36 +212,80 @@ $(document).ready(function () {
 
     function showInfoCard() {
         if (!currentMedia) return;
-        $('#info-card .info-card-banner').attr('src', currentMedia.backdropPath ? `${tmdbImageBaseUrl}${currentMedia.backdropPath}` : currentMedia.poster);
-        $('#info-card .info-card-title').text(currentMedia.title);
-        $('#info-card .info-card-description').text(currentMedia.overview);
-        $('#info-card .info-card-rating').text(`Rating: ${currentMedia.rating}/10`);
+
+        $('#info-card .info-card-banner').attr('src', ''); 
+        const bannerSrc = currentMedia.backdropPath ? `${tmdbImageBaseUrl}${currentMedia.backdropPath}` : currentMedia.poster || '';
+        $('#info-card .info-card-banner').attr('src', bannerSrc);
+
+        $('#info-card .info-card-title').text(currentMedia.title || 'Title not available');
+        $('#info-card .info-card-description').text(currentMedia.overview || 'No description available.');
+        $('#info-card .info-card-rating').text(`Rating: ${currentMedia.rating > 0 ? currentMedia.rating : 'N/A'}/10`);
 
         if (currentMedia.type === 'tv' && currentMedia.seasons && currentMedia.seasons.length) {
-            $('#season-selector').removeClass('hidden').html('<option value="">Select Season</option>' + currentMedia.seasons.map(s => `<option value="${s.season_number}">Season ${s.season_number}</option>`).join(''));
-            $('#episode-selector').removeClass('hidden');
-            $('#season-selector').off('change').on('change', function() {
-                const season = $(this).val();
-                if (season) {
-                    const selected = currentMedia.seasons.find(s => s.season_number == season);
-                    if (selected) {
-                        const eps = Array.from({ length: selected.episode_count }, (_, i) => i + 1);
-                        $('#episode-selector').html('<option value="">Select Episode</option>' + eps.map(e => `<option value="${e}">Episode ${e}</option>`).join(''));
+            const realSeasons = currentMedia.seasons.filter(s => s.season_number >= 1);
+            if (realSeasons.length > 0) {
+                $('#season-selector').removeClass('hidden').html(
+                    '<option value="">Select Season</option>' +
+                    realSeasons.map(s => `<option value="${s.season_number}">Season ${s.season_number}</option>`).join('')
+                );
+                $('#episode-selector').removeClass('hidden');
+
+                $('#season-selector').off('change').on('change', function() {
+                    const season = $(this).val();
+                    if (season) {
+                        const selected = realSeasons.find(s => s.season_number == season);
+                        if (selected) {
+                            const eps = Array.from({ length: selected.episode_count }, (_, i) => i + 1);
+                            $('#episode-selector').html('<option value="">Select Episode</option>' + eps.map(e => `<option value="${e}">Episode ${e}</option>`).join(''));
+                        }
+                    } else {
+                        $('#episode-selector').html('<option value="">Select Episode</option>');
                     }
-                }
-            });
+                });
+            } else {
+                $('#season-selector, #episode-selector').addClass('hidden');
+            }
         } else {
             $('#season-selector, #episode-selector').addClass('hidden');
         }
 
+        let favs = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
+        const isFavorited = favs.some(m => m.id === currentMedia.id && m.type === currentMedia.type);
+
+        const favBtn = $('#info-card .info-card-favorite');
+        favBtn.html(isFavorited 
+            ? '<i class="fas fa-heart"></i> Remove from Favorites'
+            : '<i class="far fa-heart"></i> Add to Favorites'
+        );
+
+        favBtn.off('click').on('click', function() {
+            if (isFavorited) {
+                favs = favs.filter(m => !(m.id === currentMedia.id && m.type === currentMedia.type));
+                localStorage.setItem('favoriteMedia', JSON.stringify(favs));
+                loadFavoritesTab();
+                favBtn.html('<i class="far fa-heart"></i> Add to Favorites');
+            } else {
+                favs.unshift(currentMedia);
+                if (favs.length > 20) favs = favs.slice(0, 20);
+                localStorage.setItem('favoriteMedia', JSON.stringify(favs));
+                loadFavoritesTab();
+                favBtn.html('<i class="fas fa-heart"></i> Remove from Favorites');
+            }
+        });
+
         $('#info-card').removeClass('hidden').addClass('active');
 
         $(document).off('click.infoCard').on('click.infoCard', function(e) {
-            if (!$(e.target).closest('#info-card, .media-card').length) {
+            if (!$(e.target).closest('#info-card, .media-card, .close-btn').length) {
                 $('#info-card').removeClass('active');
             }
         });
     }
+
+    $('#info-card .close-btn').off('click').on('click', function() {
+        $('#info-card').removeClass('active').addClass('hidden');
+        currentMedia = null;
+    });
 
     $('#info-card .info-card-play').off('click').on('click', function() {
         if (!currentMedia || !currentMedia.imdbId) return;
@@ -257,29 +310,33 @@ $(document).ready(function () {
         embedPlayer(currentMedia.imdbId, currentMedia.type, season, episode, selectedSource, currentMedia.id);
     });
 
-    $('#info-card .info-card-favorite').off('click').on('click', function() {
-        if (!currentMedia) return;
-        let favs = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
-        if (!favs.find(m => m.id === currentMedia.id && m.type === currentMedia.type)) {
-            favs.unshift(currentMedia);
-            if (favs.length > 20) favs = favs.slice(0, 20);
-            localStorage.setItem('favoriteMedia', JSON.stringify(favs));
-            loadFavoritesTab();
-        }
-    });
-
     function updateNextEpisodeButton() {
         const btn = $('#next-episode-btn');
         btn.hide().off('click');
 
         if (currentMedia && currentMedia.type === 'tv' && currentPlayback.season && currentPlayback.episode) {
-            const currentSeason = currentMedia.seasons.find(s => s.season_number == currentPlayback.season);
-            
-            if (currentSeason && parseInt(currentPlayback.episode) < currentSeason.episode_count) {
-                const nextEpisode = parseInt(currentPlayback.episode) + 1;
-                
+            const realSeasons = (currentMedia.seasons || []).filter(s => s.season_number >= 1);
+            if (realSeasons.length === 0) return;
+
+            const currentSeasonData = realSeasons.find(s => s.season_number == currentPlayback.season);
+            if (!currentSeasonData) return;
+
+            const totalEpisodes = currentSeasonData.episode_count || 0;
+            if (totalEpisodes <= 0 || parseInt(currentPlayback.episode) >= totalEpisodes) return;
+
+            if (typeof currentPlayback.currentEpisodeIndex !== 'number') {
+                currentPlayback.currentEpisodeIndex = parseInt(currentPlayback.episode) - 1;
+            }
+
+            const nextIndex = currentPlayback.currentEpisodeIndex + 1;
+
+            if (nextIndex < totalEpisodes) {
+                const nextEpisode = nextIndex + 1;
+
                 btn.show().on('click', function() {
+                    currentPlayback.currentEpisodeIndex = nextIndex;
                     currentPlayback.episode = nextEpisode;
+
                     const source = $('#source-selector').val() || 'player.autoembed.cc';
                     let cleanId = (currentMedia.id || currentMedia.imdbId).toString();
                     if (cleanId.startsWith('tt')) cleanId = cleanId.replace('tt', '');
@@ -304,6 +361,7 @@ $(document).ready(function () {
 
                     $('#player-iframe').attr('src', nextUrl);
                     showPlayerInfo();
+                    updateNextEpisodeButton();
                 });
             }
         }
@@ -313,6 +371,9 @@ $(document).ready(function () {
         let cleanId = mediaId.toString();
         if (!cleanId.startsWith('tt') && tmdbId) cleanId = tmdbId.toString();
         else if (!cleanId.startsWith('tt')) cleanId = 'tt' + cleanId;
+
+        currentPlayback = { id: mediaId, type, season, episode };
+        currentPlayback.currentEpisodeIndex = parseInt(episode || 1) - 1;
 
         let url;
 
@@ -341,8 +402,6 @@ $(document).ready(function () {
                 url = `https://player.autoembed.cc/embed/movie/${cleanId}`;
         }
 
-        currentPlayback = { id: mediaId, type, season, episode };
-
         const iframe = $('#player-iframe');
         iframe.attr('src', url);
         $('#player-overlay').removeClass('hidden');
@@ -368,6 +427,8 @@ $(document).ready(function () {
     $('#close-player').click(function() {
         $('#player-iframe').attr('src', '');
         $('#player-overlay').addClass('hidden');
+        currentMedia = null;
+        currentPlayback = { id: null, type: null, season: null, episode: null, currentEpisodeIndex: null };
     });
 
     $('#toggle-fullscreen').click(function() {
@@ -447,7 +508,8 @@ $(document).ready(function () {
 
     $('#logout-button').click(function() {
         localStorage.clear();
-        switchView('login-view');
+        switchView('main-view');
+        loadHomeTab();
     });
 
     $('#dark-mode-toggle').change(function() {
@@ -462,15 +524,29 @@ $(document).ready(function () {
         $('.player-info .info-card-title').text(currentMedia.title || 'Unknown Title');
         $('.player-info .info-card-description').text(currentMedia.overview || 'No description available.');
         $('.player-info .info-card-cast').text('Cast information not available in this view.');
-        $('.player-info .info-card-rating').text(`Rating: ${currentMedia.rating}/10`);
+        $('.player-info .info-card-rating').text(`Rating: ${currentMedia.rating > 0 ? currentMedia.rating : 'N/A'}/10`);
 
-        $('.player-info .info-card-favorite').off('click').on('click', function() {
-            let favs = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
-            if (!favs.find(m => m.id === currentMedia.id && m.type === currentMedia.type)) {
+        let favs = JSON.parse(localStorage.getItem('favoriteMedia') || '[]');
+        const isFavorited = favs.some(m => m.id === currentMedia.id && m.type === currentMedia.type);
+
+        const playerFavBtn = $('.player-info .info-card-favorite');
+        playerFavBtn.html(isFavorited 
+            ? '<i class="fas fa-heart"></i> Remove from Favorites'
+            : '<i class="far fa-heart"></i> Add to Favorites'
+        );
+
+        playerFavBtn.off('click').on('click', function() {
+            if (isFavorited) {
+                favs = favs.filter(m => !(m.id === currentMedia.id && m.type === currentMedia.type));
+                localStorage.setItem('favoriteMedia', JSON.stringify(favs));
+                loadFavoritesTab();
+                playerFavBtn.html('<i class="far fa-heart"></i> Add to Favorites');
+            } else {
                 favs.unshift(currentMedia);
                 if (favs.length > 20) favs = favs.slice(0, 20);
                 localStorage.setItem('favoriteMedia', JSON.stringify(favs));
                 loadFavoritesTab();
+                playerFavBtn.html('<i class="fas fa-heart"></i> Remove from Favorites');
             }
         });
     }

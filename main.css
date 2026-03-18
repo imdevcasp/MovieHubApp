@@ -231,6 +231,16 @@ body {
     margin: 12px auto !important;
     display: block !important;
 }
+
+.info-card-favorite,
+.player-info .info-card-favorite {
+    transition: all 0.3s ease;
+}
+
+.info-card-favorite i.fas.fa-heart {
+    color: #ff4d6d; 
+}
+
 .overlay {
     position: fixed;
     inset: 0;
@@ -448,4 +458,21 @@ input:checked + .slider:before {
 @keyframes slideBackground {
     0%   { transform: translateX(0); }
     100% { transform: translateX(-33.33%); }
+}
+
+.info-card .close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: #ff3b5c !important;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    z-index: 10;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
 }
