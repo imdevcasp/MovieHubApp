@@ -7,7 +7,7 @@ $(document).ready(function () {
         darkMode: true
     });
 
-    const tmdbApiKey = 'YOUR_TMDB_API_KEY';
+    const tmdbApiKey = 'e587d622743d6f7cf14008ecb6d86c7f';
     const tmdbBaseUrl = 'https://api.themoviedb.org/3';
     const tmdbImageBaseUrl = 'https://image.tmdb.org/t/p/w500';
 
